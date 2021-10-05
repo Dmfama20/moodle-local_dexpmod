@@ -100,7 +100,7 @@ elseif($data = $mform->get_data()) {
                     // To ensure a valid date read expextec completion from DB
                     $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
                    
-                    echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                     echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
 
                     }
 
