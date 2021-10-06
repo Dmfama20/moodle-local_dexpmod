@@ -32,7 +32,7 @@ class dexpmod_form extends moodleform {
         global $CFG;
         global $PAGE;
 
-        $activities = block_completion_progress_get_activities($this->_customdata['courseid'], null, 'orderbycourse');
+        $activities = local_dexpmod_get_activities($this->_customdata['courseid'], null, 'orderbycourse');
         $numactivies = count($activities);
        
         
