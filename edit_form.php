@@ -47,8 +47,17 @@ class dexpmod_form extends moodleform {
             $mform->addElement('hidden', $name, $value);
             $mform->setType($name, PARAM_RAW);
         }
-        $mform->addElement('duration', 'timeduration', 'Intervall');
+        $now = new DateTime("now", core_date::get_server_timezone_object());
+
+       
         
+        
+        $a = new stdClass();
+        $a->course = get_course($this->_customdata['courseid'])->fullname ;
+        $a->datemin = userdate(1633039200);
+        $a->datemax = userdate(1635721140);
+        $mform->addElement('static', '', '', get_string('info', 'local_dexpmod', $a));
+        $mform->addElement('duration', 'timeduration', 'Intervall');
         // Control which activities are included in the bar.
         $activitiesincludedoptions = array(
             'allactivites' => 'All activities',
@@ -64,8 +73,10 @@ class dexpmod_form extends moodleform {
         $mform->hideif('datedependence', 'config_activitiesincluded', 'eq', 'selectedactivities');
         $mform->addElement('date_time_selector', 'date_min', get_string('date_min', 'local_dexpmod'));
         $mform->hideif('date_min', 'config_activitiesincluded', 'eq', 'selectedactivities');
+        $mform->hideif('date_min', 'datedependence', 'eq', '0');
         $mform->addElement('date_time_selector', 'date_max', 'maximal Datum');
         $mform->hideif('date_max', 'config_activitiesincluded', 'eq', 'selectedactivities');
+        $mform->hideif('date_max', 'datedependence', 'eq', '0');
        
 
         // Selected activities by the user
@@ -79,9 +90,9 @@ class dexpmod_form extends moodleform {
         }
         $mform->addElement('select', 'selectactivities', 'select activities', $activitiestoinclude);  
         $mform->getElement('selectactivities')->setMultiple(true);
-        $mform->getElement('selectactivities')->setSize($numactivies);    
+        $mform->getElement('selectactivities')->setSize(count($activitiestoinclude));    
         $mform->setAdvanced('selectactivities', true);
-        $mform->disabledif('selectactivities', 'config_activitiesincluded', 'neq', 'selectedactivities');
+        $mform->hideif('selectactivities', 'config_activitiesincluded', 'neq', 'selectedactivities');
         // $mform->addElement('submit', 'submitbutton', get_string('finish', 'local_dexpmod'));
         $this->add_action_buttons($cancel = false, $submitlabel='Ändern!');
     

@@ -54,10 +54,11 @@ $PAGE->navbar->ignore_active(true);
 $PAGE->navbar->add("Dexpmod", new moodle_url($url));
 $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
-echo $OUTPUT->heading('DexpMod',1);
+// echo $OUTPUT->heading('DexpMod',1);
 
 
 $mform = new dexpmod_form(null, array('courseid'=>$courseID ));
+$mform->display();
 if ($mform->is_cancelled()){
     $cancelurl = new moodle_url('/course/view.php', $currentparams);
      redirect($cancelurl);
@@ -77,6 +78,9 @@ elseif($data = $mform->get_data()) {
         $expected_array = $DB->get_records('course_modules',$sql_params );
 
         echo $OUTPUT->heading('Folgende Aktivitäten wurden verschoben: ' ,3);
+
+        $table = new html_table();
+        $table->head = array( 'Aktivität' , 'Abschlusstermin');
 
     foreach($activities as $index => $activity)  {        
 
@@ -100,13 +104,10 @@ elseif($data = $mform->get_data()) {
                     // To ensure a valid date read expextec completion from DB
                     $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
                    
-                     echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                    //  echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                     $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
 
                     }
-
-                  
-                    
-
 
                 }
 
@@ -119,20 +120,19 @@ elseif($data = $mform->get_data()) {
                  $DB->update_record('course_modules',$update_params );
                  // To ensure a valid date read expextec completion from DB
                  $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
-                
-                 echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                //  echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                 $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
+
 
                 }
-
-                 
-                
-
+     
             }
 
             else    {
+                // All Activities chosen by the user
                 if(in_array($activity['id'], $data->selectactivities) )
                 {
-                    // All Activities chosen by the user
+                    
                     $record_params = ['id' => $activity['id']];
                     $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
                     $newdate=$expected_old->completionexpected+$add_duration;
@@ -141,17 +141,15 @@ elseif($data = $mform->get_data()) {
                     // To ensure a valid date read expextec completion from DB
                     $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
                    
-                    echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);                           
+                    // echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);      
+                    $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
+                     
                 }
-
-            }
-
-           
-
+            } 
     }
 
-
     }
+    echo html_writer::table($table);
 
 }
 
@@ -162,23 +160,27 @@ else {
     $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
     $numactivies = count($activities);
     
-
-    echo $OUTPUT->heading('Kursinformationen : '.get_course($courseID)->fullname  ,2);
+    $table = new html_table();
+    $table->head = array( 'Aktivität' , 'Abschlusstermin');
+    // echo $OUTPUT->heading('Kursinformationen: '.get_course($courseID)->fullname  ,2);
     $sql_params = ['course' => $courseID ];
-    echo $OUTPUT->heading('Aktivitäten mit Abschlusstermin:',4);  
+    get_string('explain', 'local_dexpmod');
 
    foreach($activities as $index => $activity)  {
 
     if($activity['expected']>0 )  {
         $record_params = ['id' => $activity['id']];
         $date_expected=$DB->get_record('course_modules',$record_params,$fields='*' );
-        echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
+        // echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
+        $table->data[] = array($activity['name'],userdate($date_expected->completionexpected));
        
     }      
 
    }
+
+   echo html_writer::table($table);
     
 }
 //displays the form
-$mform->display();
+
 echo $OUTPUT->footer();

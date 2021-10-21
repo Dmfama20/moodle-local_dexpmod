@@ -26,6 +26,11 @@ $string['pluginname'] = 'DexpMod';
 $string['course_link'] = 'DexpMod'; 
 $string['semester_begin'] = 'Semester Start';
 $string['finish'] = 'los!';
+$string['info'] = '<p>In the table below you will find all activities of the course <i>{$a->course}</i> where an activity completion date is enabled.</p> 
+<p>You can move all listed activities by selecting a time intervall 
+and pressing the submit button. By enabling the activity date checkbox you can chose upper and lower bounds of moved acitivities.</p> 
+I.e. if you want to move all activities with expected date in October 2021 you can chose upper and lower dates equal to <p> <i> {$a->datemin} and {$a->datemax}. </i> </p>
+For moving only selected acitites choose "selected activies only". Then you can select/unselect all activies which you want to move manually.';
 $string['date_min'] = 'Mindest Datum';
 $string['how_date_selection_works'] = 'How date selection works';
 $string['how_date_selection_works_help'] = 'Chose lower and upper date for shifting. This will only work if you chose >>all activities<< in the dropdown above!';
