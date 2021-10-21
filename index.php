@@ -57,7 +57,7 @@ echo $OUTPUT->header();
 // echo $OUTPUT->heading('DexpMod',1);
 
 
-$mform = new dexpmod_form(null, array('courseid'=>$courseID ));
+$mform = new dexpmod_form(null, array('courseid'=>$courseID, 'url'=>$url ));
 $mform->display();
 if ($mform->is_cancelled()){
     $cancelurl = new moodle_url('/course/view.php', $currentparams);

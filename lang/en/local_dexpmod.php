@@ -30,7 +30,9 @@ $string['info'] = '<p>In the table below you will find all activities of the cou
 <p>You can move all listed activities by selecting a time intervall 
 and pressing the submit button. By enabling the activity date checkbox you can chose upper and lower bounds of moved acitivities.</p> 
 I.e. if you want to move all activities with expected date in October 2021 you can chose upper and lower dates equal to <p> <i> {$a->datemin} and {$a->datemax}. </i> </p>
-For moving only selected acitites choose "selected activies only". Then you can select/unselect all activies which you want to move manually.';
+For moving only selected acitites choose "selected activies only". Then you can select/unselect all activies which you want to move manually.
+<p>If you want to refresh the table below,  
+<a href="index.php?id={$a->courseid}">please click here!</a> </p> ';
 $string['date_min'] = 'Mindest Datum';
 $string['how_date_selection_works'] = 'How date selection works';
 $string['how_date_selection_works_help'] = 'Chose lower and upper date for shifting. This will only work if you chose >>all activities<< in the dropdown above!';
