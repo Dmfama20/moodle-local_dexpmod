@@ -55,8 +55,6 @@ class dexpmod_form extends moodleform {
         $a = new stdClass();
         $a->course = get_course($this->_customdata['courseid'])->fullname ;
         $a->courseid=$this->_customdata['courseid'];
-        if($this->_customdata['submitted']=='1')
-        {echo "submitted!!";}
         $a->datemin = userdate(1633039200);
         $a->datemax = userdate(1635721140);
         $mform->addElement('static', '', '', get_string('info', 'local_dexpmod', $a));
