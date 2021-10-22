@@ -46,7 +46,8 @@ function local_dexpmod_extend_settings_navigation($settingsnav, $context) {
             $url,
             navigation_node::NODETYPE_LEAF,
             'dexpmod',
-            'dexpmod'
+            'dexpmod',
+            new pix_icon('i/scheduled', 'dexpmod')
         );
         if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
             $foonode->make_active();
