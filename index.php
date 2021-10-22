@@ -30,11 +30,11 @@ require_once('edit_form.php');
 
 global $CFG, $DB, $PAGE;
 $courseID = required_param('id', PARAM_INT);
+
+
 $currentparams = ['id' => $courseID];
-
-  $url = new moodle_url('/local/dexpmod/index.php', $currentparams);
-
- $PAGE->set_url($url);
+$url = new moodle_url('/local/dexpmod/index.php', $currentparams);
+$PAGE->set_url($url);
 
 
 
@@ -54,133 +54,28 @@ $PAGE->navbar->ignore_active(true);
 $PAGE->navbar->add("Dexpmod", new moodle_url($url));
 $PAGE->set_pagelayout('admin');
 echo $OUTPUT->header();
-// echo $OUTPUT->heading('DexpMod',1);
-
-
-$mform = new dexpmod_form(null, array('courseid'=>$courseID, 'url'=>$url ));
+$mform = new dexpmod_form(null, array('courseid'=>$courseID, 'url'=>$url));
+//display the form
 $mform->display();
-if ($mform->is_cancelled()){
-    $cancelurl = new moodle_url('/course/view.php', $currentparams);
-     redirect($cancelurl);
-}
+
+// $mform->set_data((object)$currentparams);
+if($data = $mform->get_data()) {
+    //  redirect(new moodle_url('/local/dexpmod/index.php', $currentparams));
+
+    $table= list_moved_activities($courseID,$data);
 
 
-elseif($data = $mform->get_data()) {
-    //DATA Submited
-
-    //Get all activities in the course
-    $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
-    $numactivies = count($activities);
-
-
-        $add_duration = $data->timeduration;
-        $sql_params = ['course' => $courseID ];
-        $expected_array = $DB->get_records('course_modules',$sql_params );
-
-        echo $OUTPUT->heading('Folgende Aktivitäten wurden verschoben: ' ,3);
-
-        $table = new html_table();
-        $table->head = array( 'Aktivität' , 'Abschlusstermin');
-
-    foreach($activities as $index => $activity)  {        
-
-        if($activity['expected']>0)    {
-            //Activities with expected completion
-
-            // Check if all activities should be moved
-            if($data->config_activitiesincluded=='allactivites')
-            {// Move all activities contained in the course
-
-                if($data->datedependence)    {
-
-                    $record_params = ['id' => $activity['id']];
-                    $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
-
-                    if($data->date_min <= $expected_old->completionexpected && $expected_old->completionexpected <= $data->date_max)
-                    {
-                        $newdate=$expected_old->completionexpected+$add_duration;
-                    $update_params = ['id' => $activity['id'], 'completionexpected' => $newdate];
-                    $DB->update_record('course_modules',$update_params );
-                    // To ensure a valid date read expextec completion from DB
-                    $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
-                   
-                    //  echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
-                     $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
-
-                    }
-
-                }
-
-                else    {
-
-                    $record_params = ['id' => $activity['id']];
-                 $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
-                 $newdate=$expected_old->completionexpected+$add_duration;
-                 $update_params = ['id' => $activity['id'], 'completionexpected' => $newdate];
-                 $DB->update_record('course_modules',$update_params );
-                 // To ensure a valid date read expextec completion from DB
-                 $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
-                //  echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
-                 $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
-
-
-                }
-     
-            }
-
-            else    {
-                // All Activities chosen by the user
-                if(in_array($activity['id'], $data->selectactivities) )
-                {
-                    
-                    $record_params = ['id' => $activity['id']];
-                    $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
-                    $newdate=$expected_old->completionexpected+$add_duration;
-                    $update_params = ['id' => $activity['id'], 'completionexpected' => $newdate];
-                    $DB->update_record('course_modules',$update_params );
-                    // To ensure a valid date read expextec completion from DB
-                    $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
-                   
-                    // echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);      
-                    $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
-                     
-                }
-            } 
-    }
-
-    }
     echo html_writer::table($table);
 
 }
 
 else {
 
-    //Standard values without submitting the form
-
-    $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
-    $numactivies = count($activities);
-    
-    $table = new html_table();
-    $table->head = array( 'Aktivität' , 'Abschlusstermin');
-    // echo $OUTPUT->heading('Kursinformationen: '.get_course($courseID)->fullname  ,2);
-    $sql_params = ['course' => $courseID ];
-    get_string('explain', 'local_dexpmod');
-
-   foreach($activities as $index => $activity)  {
-
-    if($activity['expected']>0 )  {
-        $record_params = ['id' => $activity['id']];
-        $date_expected=$DB->get_record('course_modules',$record_params,$fields='*' );
-        // echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
-        $table->data[] = array($activity['name'],userdate($date_expected->completionexpected));
-       
-    }      
-
-   }
+    $table=list_all_activities($courseID);
 
    echo html_writer::table($table);
     
 }
-//displays the form
+
 
 echo $OUTPUT->footer();

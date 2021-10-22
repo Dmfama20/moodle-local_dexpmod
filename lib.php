@@ -107,3 +107,133 @@ function local_dexpmod_get_activities($courseid, $config = null, $forceorder = n
     return $activities;
 }
 
+
+
+/**
+ * Returns the activities with completion set in current course
+ *
+ * @param int    $courseid   ID of the course
+ *  @param array    $data  form data
+ * @return array table of activities
+ */
+function list_moved_activities($courseID, $data) {
+    global $DB;
+
+    //Get all activities in the course
+    $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
+    $numactivies = count($activities);
+
+
+        $add_duration = $data->timeduration;
+        $sql_params = ['course' => $courseID ];
+        $expected_array = $DB->get_records('course_modules',$sql_params );
+
+
+        $table = new html_table();
+        $table->head = array( 'Aktivität' , 'Abschlusstermin');
+
+    foreach($activities as $index => $activity)  {        
+
+        if($activity['expected']>0)    {
+            //Activities with expected completion
+
+            // Check if all activities should be moved
+            if($data->config_activitiesincluded=='allactivites')
+            {// Move all activities contained in the course
+
+                if($data->datedependence)    {
+
+                    $record_params = ['id' => $activity['id']];
+                    $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
+
+                    if($data->date_min <= $expected_old->completionexpected && $expected_old->completionexpected <= $data->date_max)
+                    {
+                        $newdate=$expected_old->completionexpected+$add_duration;
+                    $update_params = ['id' => $activity['id'], 'completionexpected' => $newdate];
+                    $DB->update_record('course_modules',$update_params );
+                    // To ensure a valid date read expextec completion from DB
+                    $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
+                   
+                    //  echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                     $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
+
+                    }
+
+                }
+
+                else    {
+
+                    $record_params = ['id' => $activity['id']];
+                 $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
+                 $newdate=$expected_old->completionexpected+$add_duration;
+                 $update_params = ['id' => $activity['id'], 'completionexpected' => $newdate];
+                 $DB->update_record('course_modules',$update_params );
+                 // To ensure a valid date read expextec completion from DB
+                 $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
+                //  echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);
+                 $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
+
+
+                }
+     
+            }
+
+            else    {
+                // All Activities chosen by the user
+                if(in_array($activity['id'], $data->selectactivities) )
+                {
+                    
+                    $record_params = ['id' => $activity['id']];
+                    $expected_old=$DB->get_record('course_modules',$record_params,$fields='*' );
+                    $newdate=$expected_old->completionexpected+$add_duration;
+                    $update_params = ['id' => $activity['id'], 'completionexpected' => $newdate];
+                    $DB->update_record('course_modules',$update_params );
+                    // To ensure a valid date read expextec completion from DB
+                    $replaced_date=$DB->get_record('course_modules',$record_params,$fields='*' );
+                   
+                    // echo $OUTPUT->heading($activity['name']." -> ". userdate( $replaced_date->completionexpected),5);      
+                    $table->data[] = array($activity['name'],userdate( $replaced_date->completionexpected));
+                     
+                }
+            } 
+    }
+
+    }
+
+    return $table;
+}
+
+
+/**
+ * Returns the activities with completion set in current course
+ *
+ * @param int    $courseid   ID of the course
+ * @return array table of activities
+ */
+function list_all_activities($courseID) {
+    global $DB;
+   //Standard values without submitting the form
+
+   $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
+   $numactivies = count($activities);
+   
+   $table = new html_table();
+   $table->head = array( 'Aktivität' , 'Abschlusstermin');
+   // echo $OUTPUT->heading('Kursinformationen: '.get_course($courseID)->fullname  ,2);
+   $sql_params = ['course' => $courseID ];
+  foreach($activities as $index => $activity)  {
+
+   if($activity['expected']>0 )  {
+       $record_params = ['id' => $activity['id']];
+       $date_expected=$DB->get_record('course_modules',$record_params,$fields='*' );
+       // echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
+       $table->data[] = array($activity['name'],userdate($date_expected->completionexpected));
+      
+   }      
+
+  }
+
+  return $table;
+}
+
+
