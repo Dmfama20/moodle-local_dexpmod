@@ -34,7 +34,7 @@ function local_dexpmod_extend_settings_navigation($settingsnav, $context) {
     }
 
     // Only let users with the appropriate capability see this settings item.
-    if (!has_capability('moodle/backup:backupcourse', context_course::instance($PAGE->course->id))) {
+    if (!has_capability('moodle/site:config', context_system::instance())) {
         return;
     }
 
