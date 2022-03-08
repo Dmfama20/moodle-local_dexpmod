@@ -53,29 +53,32 @@ $PAGE->navbar->ignore_active(true);
 // $PAGE->navbar->add("Dexpmod", new moodle_url('/local/dexpmod/index.php'));
 $PAGE->navbar->add("Dexpmod", new moodle_url($url));
 $PAGE->set_pagelayout('admin');
-echo $OUTPUT->header();
-$mform = new dexpmod_form(null, array('courseid'=>$courseID, 'url'=>$url));
+
+$mform = new dexpmod_form( null, array('courseid'=>$courseID, 'url'=>$url));
 //display the form
-$mform->display();
+
+
 
 // $mform->set_data((object)$currentparams);
 if($data = $mform->get_data()) {
-    //  redirect(new moodle_url('/local/dexpmod/index.php', $currentparams));
+    //  
+    // echo var_dump($data);
+     list_moved_activities($courseID,$data);
+    redirect(new moodle_url('/local/dexpmod/index.php', $currentparams));
 
-    $table= list_moved_activities($courseID,$data);
 
-
-    echo html_writer::table($table);
-
-}
-
-else {
-
-    $table=list_all_activities($courseID);
-
-   echo html_writer::table($table);
+    // echo html_writer::table($table);
     
+
 }
+
+echo $OUTPUT->header();
+$mform->display();
+$table=list_all_activities($courseID);
+
+echo html_writer::table($table);
+    
+
 
 
 echo $OUTPUT->footer();

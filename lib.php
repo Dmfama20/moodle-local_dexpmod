@@ -17,7 +17,7 @@
 /**
  * Library of functions for local_differentiator.
  *
- * @package     local_dexpmod
+ * @package     local_forumreset
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -98,12 +98,12 @@ function local_dexpmod_get_activities($courseid, $config = null, $forceorder = n
         }
     }
 
-    // Sort by first value in each element, which is time due.
-    if ($forceorder == 'orderbycourse' || ($config && $config->orderby == 'orderbycourse')) {
-        usort($activities, 'block_completion_progress_compare_events');
-    } else {
-        usort($activities, 'block_completion_progress_compare_times');
-    }
+    // // Sort by first value in each element, which is time due.
+    // if ($forceorder == 'orderbycourse' || ($config && $config->orderby == 'orderbycourse')) {
+    //     usort($activities, 'block_completion_progress_compare_events');
+    // } else {
+    //     usort($activities, 'block_completion_progress_compare_times');
+    // }
 
     return $activities;
 }
