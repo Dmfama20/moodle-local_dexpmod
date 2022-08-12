@@ -86,7 +86,7 @@ class dexpmod_form extends moodleform {
             if($activity['expected']>0)
             {
             // $activitiestoinclude[$activity['type'].'-'.$activity['instance']] = $activity['name'];
-            $activitiestoinclude[$activity['id']] = $activity['name'];
+            $activitiestoinclude[$activity['id']] = $activity['section'].": ".$activity['name']." ".gmdate("d-m-y",$activity['expected']);
             }
         }
         $mform->addElement('select', 'selectactivities', 'select activities', $activitiestoinclude);  

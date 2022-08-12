@@ -93,6 +93,7 @@ function local_dexpmod_get_activities($courseid, $config = null, $forceorder = n
                     'context'    => $cm->context,
                     'icon'       => $cm->get_icon_url(),
                     'available'  => $cm->available,
+                    'visible'  => $cm->visible,
                 );
             }
         }
@@ -122,8 +123,6 @@ function list_moved_activities($courseID, $data) {
 
     //Get all activities in the course
     $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
-    $numactivies = count($activities);
-
 
         $add_duration = $data->timeduration;
         $sql_params = ['course' => $courseID ];
@@ -216,19 +215,22 @@ function list_all_activities($courseID) {
    //Standard values without submitting the form
 
    $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
-   $numactivies = count($activities);
-   
    $table = new html_table();
-   $table->head = array( 'Aktivität' , 'Abschlusstermin');
+   $table->head = array( 'Abschnitt','Aktivität' , 'Abschlusstermin');
    // echo $OUTPUT->heading('Kursinformationen: '.get_course($courseID)->fullname  ,2);
    $sql_params = ['course' => $courseID ];
   foreach($activities as $index => $activity)  {
+    // // Show only visible acitivities!
+    if ($activity['visible']=='0')  {
+        continue;
+    }
 
    if($activity['expected']>0 )  {
+
        $record_params = ['id' => $activity['id']];
        $date_expected=$DB->get_record('course_modules',$record_params,$fields='*' );
        // echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
-       $table->data[] = array($activity['name'],userdate($date_expected->completionexpected));
+       $table->data[] = array($activity['section'], $activity['name'],userdate($date_expected->completionexpected));
       
    }      
 
