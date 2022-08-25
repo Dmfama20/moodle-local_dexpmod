@@ -34,7 +34,7 @@ function local_dexpmod_extend_settings_navigation($settingsnav, $context)
     }
 
     // Only let users with the appropriate capability see this settings item.
-    if (!has_capability('moodle/site:config', context_system::instance())) {
+    if (!has_capability('local/dexpmod:movedates', context_system::instance())) {
         return;
     }
 

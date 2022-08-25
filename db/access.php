@@ -15,14 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * You may jave capabilities for your plugin.
  *
- * @package    local_solr
- * @copyright  2014 Daniel Neis
+ * @package    local_dexpmod
+ * @copyright  2022 Nobody
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
+        // Whether or not the user can move dates
+        'local/dexpmod:movedates' => array(
+            'captype' => 'write',
+            'contextlevel' => CONTEXT_SYSTEM,
+        ),
 );

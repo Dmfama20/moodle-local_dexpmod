@@ -24,6 +24,7 @@
 
 $string['pluginname'] = 'DexpMod';
 $string['course_link'] = 'DexpMod'; 
+$string['dexpmod:movedates'] = 'move dates';
 $string['semester_begin'] = 'Semester Start';
 $string['finish'] = 'los!';
 $string['info'] = '<p>In the table below you will find all activities of the course <i>{$a->course}</i> where an activity completion date is enabled.</p> 
