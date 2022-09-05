@@ -32,9 +32,8 @@ function local_dexpmod_extend_settings_navigation($settingsnav, $context)
     if (!$PAGE->course or $PAGE->course->id == 1) {
         return;
     }
-
     // Only let users with the appropriate capability see this settings item.
-    if (!has_capability('local/dexpmod:movedates', context_system::instance())) {
+    if (!has_capability('local/dexpmod:movedates', context_course::instance($PAGE->course->id))) {
         return;
     }
 

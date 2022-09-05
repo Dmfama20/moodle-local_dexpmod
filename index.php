@@ -29,11 +29,13 @@ require_once 'edit_form.php';
 
 global $CFG, $DB, $PAGE;
 $courseID = required_param('id', PARAM_INT);
+$course = $DB->get_record('course', ['id' => $courseID]);
+$coursecontext = context_course::instance($course->id);
 
 $currentparams = ['id' => $courseID];
 $url = new moodle_url('/local/dexpmod/index.php', $currentparams);
 $PAGE->set_url($url);
-if (!has_capability('local/dexpmod:movedates', context_system::instance())) {
+if (!has_capability('local/dexpmod:movedates', $coursecontext)) {
     $url_back = new moodle_url('/my');
     redirect($url_back, 'sie haben nicht die passenden Berechtigungen!', null, \core\output\notification::NOTIFY_ERROR);
 }
@@ -60,7 +62,7 @@ if ($data = $mform->get_data()) {
     //
     // echo var_dump($data);
     list_moved_activities($courseID, $data);
-    redirect(new moodle_url('/local/dexpmod/index.php', $currentparams));
+    redirect(new moodle_url('/local/dexpmod/index.php', $currentparams), "Daten wurden geändert!");
 
     // echo html_writer::table($table);
 }

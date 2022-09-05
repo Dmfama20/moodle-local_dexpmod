@@ -27,6 +27,6 @@ $capabilities = array(
         // Whether or not the user can move dates
         'local/dexpmod:movedates' => array(
             'captype' => 'write',
-            'contextlevel' => CONTEXT_SYSTEM,
+            'contextlevel' => CONTEXT_COURSE,
         ),
 );
