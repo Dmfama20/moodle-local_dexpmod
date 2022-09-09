@@ -23,7 +23,7 @@
  */
 
 $string['pluginname'] = 'addbe';
-$string['course_link'] = 'DexpMod'; 
+$string['course_link'] = 'addbe'; 
 $string['dexpmod:movedates'] = 'move dates';
 $string['semester_begin'] = 'Semester Start';
 $string['finish'] = 'los!';
