@@ -18,7 +18,7 @@
 /*
  * Library of functions for local_differentiator.
  *
- * @package     local_forumreset
+ * @package     local_DexpMod
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -44,9 +44,9 @@ function local_dexpmod_extend_settings_navigation($settingsnav, $context)
             $strfoo,
             $url,
             navigation_node::NODETYPE_LEAF,
-            'dexpmod',
-            'dexpmod',
-            new pix_icon('i/scheduled', 'dexpmod')
+            'addbe',
+            'addbe',
+            new pix_icon('i/scheduled', 'addbe')
         );
         if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
             $foonode->make_active();

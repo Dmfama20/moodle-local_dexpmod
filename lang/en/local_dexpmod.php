@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html gnu gpl v3 or later
  */
 
-$string['pluginname'] = 'DexpMod';
+$string['pluginname'] = 'addbe';
 $string['course_link'] = 'DexpMod'; 
 $string['dexpmod:movedates'] = 'move dates';
 $string['semester_begin'] = 'Semester Start';
