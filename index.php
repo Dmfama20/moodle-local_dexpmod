@@ -63,11 +63,15 @@ if ($data = $mform->get_data()) {
     // echo var_dump($data);
     list_moved_activities($courseID, $data);
     redirect(new moodle_url('/local/dexpmod/index.php', $currentparams), "Daten wurden geändert!");
-
     // echo html_writer::table($table);
 }
-
 echo $OUTPUT->header();
+$a = new stdClass();
+$a->course = get_course($courseID)->fullname;
+$a->datemin = userdate(1633039200);
+$a->datemax = userdate(1635721140);
+echo html_writer::tag('h2',get_string('headline', 'local_dexpmod'));
+echo html_writer::tag('p',get_string('info', 'local_dexpmod',$a));
 $mform->display();
 $backurl = new moodle_url('/course/view.php', ['id' => $courseID]);
 echo $OUTPUT->single_button($backurl, 'Zurück zum Kurs', 'get');

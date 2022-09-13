@@ -49,12 +49,9 @@ class dexpmod_form extends moodleform
         }
         $now = new DateTime('now', core_date::get_server_timezone_object());
 
-        $a = new stdClass();
-        $a->course = get_course($this->_customdata['courseid'])->fullname;
-        $a->courseid = $this->_customdata['courseid'];
-        $a->datemin = userdate(1633039200);
-        $a->datemax = userdate(1635721140);
-        $mform->addElement('static', '', '', get_string('info', 'local_dexpmod', $a));
+      
+        // $mform->addElement('static', '', '', get_string('headline', 'local_dexpmod'));
+        // $mform->addElement('static', '', '', get_string('info', 'local_dexpmod', $a));
         $mform->addElement('duration', 'timeduration', 'Intervall');
         // Control which activities are included in the bar.
         $activitiesincludedoptions = [
@@ -66,14 +63,14 @@ class dexpmod_form extends moodleform
         $mform->setDefault('config_activitiesincluded', 'allactivites');
         $mform->setAdvanced('config_activitiesincluded', true);
         //Chose time intervall of shifted activities. Only possible if ALL activities are chose
-        $mform->addElement('advcheckbox', 'datedependence', 'Dependence on acitity dates');
+        $mform->addElement('advcheckbox', 'datedependence', 'Filter by date');
         $mform->addHelpButton('datedependence', 'how_date_selection_works', 'local_dexpmod');
-        $mform->hideif('datedependence', 'config_activitiesincluded', 'eq', 'selectedactivities');
+        $mform->hideif('datedependence', 'config_activitiesincluded', 'neq', 'selectedactivities');
         $mform->addElement('date_time_selector', 'date_min', get_string('date_min', 'local_dexpmod'));
-        $mform->hideif('date_min', 'config_activitiesincluded', 'eq', 'selectedactivities');
+        //  $mform->hideif('date_min', 'config_activitiesincluded', 'eq', 'selectedactivities');
         $mform->hideif('date_min', 'datedependence', 'eq', '0');
         $mform->addElement('date_time_selector', 'date_max', 'maximal Datum');
-        $mform->hideif('date_max', 'config_activitiesincluded', 'eq', 'selectedactivities');
+        // $mform->hideif('date_max', 'config_activitiesincluded', 'eq', 'selectedactivities');
         $mform->hideif('date_max', 'datedependence', 'eq', '0');
 
         // Selected activities by the user
@@ -89,6 +86,7 @@ class dexpmod_form extends moodleform
         $mform->getElement('selectactivities')->setSize(count($activitiestoinclude));
         $mform->setAdvanced('selectactivities', true);
         $mform->hideif('selectactivities', 'config_activitiesincluded', 'neq', 'selectedactivities');
+        $mform->hideif('selectactivities', 'datedependence', 'eq', '1');
         // $mform->addElement('submit', 'submitbutton', get_string('finish', 'local_dexpmod'));
         $this->add_action_buttons($cancel = false, $submitlabel = 'Ändern!');
     }
