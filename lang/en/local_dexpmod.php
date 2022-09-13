@@ -27,7 +27,7 @@ $string['course_link'] = 'addbe';
 $string['dexpmod:movedates'] = 'move dates';
 $string['semester_begin'] = 'Semester Start';
 $string['finish'] = 'los!';
-$string['headline'] = '<h2>Move your activity dates in bulk!</h2">';
+$string['headline'] = 'Move your activity dates in bulk!';
 $string['info'] = '<p>In the table below you will find all activities of the course <i>{$a->course}</i> where an activity completion date is enabled.</p> 
 <p>You can move all listed activities by selecting a time intervall 
 and pressing the submit button. By enabling the activity date checkbox you can chose upper and lower bounds of moved acitivities.</p> 
