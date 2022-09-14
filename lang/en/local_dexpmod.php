@@ -41,6 +41,7 @@ I.e. if you want to move all activities with expected date in October 2021 you c
 For moving only selected acitites choose "selected activies only". Then you can select/unselect all activies which you want to move manually. ';
 $string['date_min'] = 'date min';
 $string['date_max'] = 'date max';
+$string['refresh'] ='<a href="index.php?id={$a->courseid}">refresh the page!</a>';
 $string['filterbydate'] = 'apply date filter';
 $string['datefilter'] = 'filter by date';
 $string['how_date_selection_works'] = 'Date selection';

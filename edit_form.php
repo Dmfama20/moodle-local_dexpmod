@@ -51,7 +51,6 @@ class dexpmod_form extends moodleform
             $mform->setType($name, PARAM_RAW);
         }
         $now = new DateTime('now', core_date::get_server_timezone_object());
-
       
         // $mform->addElement('static', '', '', get_string('headline', 'local_dexpmod'));
         // $mform->addElement('static', '', '', get_string('info', 'local_dexpmod', $a));
@@ -68,6 +67,16 @@ class dexpmod_form extends moodleform
         $mform->addElement('advcheckbox', 'datedependence', get_string('datefilter', 'local_dexpmod'));
         $mform->addHelpButton('datedependence', 'how_date_selection_works', 'local_dexpmod');
         $mform->hideif('datedependence', 'config_activitiesincluded', 'neq', 'selectedactivities');
+        // Dirty hack: user may refresh page after unchecking the date filte
+        if ($this->_customdata['datemin']>0) {
+            // ISSUE MDL-66251: Static element can't be hidden
+            $a = new stdClass();
+            $a->courseid = $this->_customdata['courseid'];
+            $group = [];
+            $group[] =& $mform->createElement('static', 'refresh', '',get_string('refresh', 'local_dexpmod',$a));
+            $mform->addGroup($group, 'formgroup', '', ' ', false);
+            $mform->hideIf('formgroup','datedependence', 'eq', '1');
+        }
         $mform->addElement('date_time_selector', 'date_min', get_string('date_min', 'local_dexpmod'));
         //  $mform->hideif('date_min', 'config_activitiesincluded', 'eq', 'selectedactivities');
         $mform->hideif('date_min', 'datedependence', 'eq', '0');
