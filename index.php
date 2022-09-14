@@ -76,26 +76,42 @@ if ($data = $mform->get_data()) {
     }
     
 }
+
+// Check if we have activities with duedate
+$activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
+$duedateactivities = array();
+foreach($activities as $activity)   {
+    if($activity['expected'] > 0)   {
+        $duedateactivities[]=$activity['id'];
+    }
+}
 echo $OUTPUT->header();
 $a = new stdClass();
 $a->course = get_course($courseID)->fullname;
 $a->datemin = userdate(1633039200);
 $a->datemax = userdate(1635721140);
-echo html_writer::tag('h2',get_string('headline', 'local_dexpmod'));
-echo html_writer::tag('p',get_string('info', 'local_dexpmod',$a));
-$mform->display();
+if(count($duedateactivities)>0) {
+    echo html_writer::tag('h2',get_string('headline', 'local_dexpmod'));
+    echo html_writer::tag('p',get_string('info', 'local_dexpmod',$a));
+    $mform->display();
+}
 $backurl = new moodle_url('/course/view.php', ['id' => $courseID]);
 echo $OUTPUT->single_button($backurl, get_string('backtocourse', 'local_dexpmod'), 'get');
-if($datemin) {
-    $table = list_all_activities($courseID,$datemin,$datemax);
-    echo html_writer::tag('h3',"List of filtered activities");
-    echo html_writer::table($table);
-}
-else {
-    $table = list_all_activities($courseID);
-    echo html_writer::tag('h3',"List of all activities");
-    echo html_writer::table($table);
-}
 
-
+if(count($duedateactivities)>0) {
+    if($datemin) {
+        $table = list_all_activities($courseID,$datemin,$datemax);
+        echo html_writer::tag('h3',"List of filtered activities");
+        echo html_writer::table($table);
+    }
+    else {
+        $table = list_all_activities($courseID);
+        echo html_writer::tag('h3',"List of all activities");
+        echo html_writer::table($table);
+    }
+     
+        }
+else    {
+    echo html_writer::tag('h3',"No activity duedates found. Please create activities with duedate!");
+}
 echo $OUTPUT->footer();
