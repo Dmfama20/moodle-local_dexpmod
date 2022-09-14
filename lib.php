@@ -15,12 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * Library of functions for local_differentiator.
- *
- * @package     local_DexpMod
+/**
+ * Local plugin "DexpMod" - lib
+ * *
+ * @package     local_dexpmod
+ * @copyright   2022 Alexander Dominicus, Bochum University of Applied Science <alexander.dominicus@hs-bochum.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -109,24 +111,21 @@ function local_dexpmod_get_activities($courseid, $config = null, $forceorder = n
     return $activities;
 }
 
+
+
 /**
- * Returns the activities with completion set in current course.
- *
+ * Moves the chosen activities and returns a list of these activities.
  *  @param array    $data  form data
- *
  * @return array table of activities
  */
-function list_moved_activities($courseID, $data)
+function move_activities($courseID, $data)
 {
     global $DB;
-
     //Get all activities in the course
     $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
-
     $add_duration = $data->timeduration;
     $sql_params = ['course' => $courseID];
     $expected_array = $DB->get_records('course_modules', $sql_params);
-
     $table = new html_table();
     $table->head = ['Aktivität', 'Abschlusstermin'];
 
@@ -187,14 +186,14 @@ function list_moved_activities($courseID, $data)
  *
  * @return array table of activities
  */
-function list_all_activities($courseID)
+function list_all_activities($courseID, $datemin=null, $datemax=null)
 {
     global $DB;
     //Standard values without submitting the form
 
     $activities = local_dexpmod_get_activities($courseID, null, 'orderbycourse');
     $table = new html_table();
-    $table->head = ['Abschnitt', 'Aktivität', 'Abschlusstermin'];
+    $table->head = [get_string('section', 'local_dexpmod'), get_string('activity', 'local_dexpmod'), get_string('duedate', 'local_dexpmod')];
     // echo $OUTPUT->heading('Kursinformationen: '.get_course($courseID)->fullname  ,2);
     $sql_params = ['course' => $courseID];
     foreach ($activities as $index => $activity) {
@@ -202,12 +201,25 @@ function list_all_activities($courseID)
         if ($activity['visible'] == '0') {
             continue;
         }
-
         if ($activity['expected'] > 0) {
+            if ($datemin)   {
+                if($activity['expected'] >= $datemin && $activity['expected']<= $datemax)   {
+                    $record_params = ['id' => $activity['id']];
+                     $date_expected = $DB->get_record('course_modules', $record_params, $fields = '*');
+                    // echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
+                    $table->data[] = [$activity['section'], $activity['name'], date('d.m.y-H:i', $date_expected->completionexpected)];
+                } 
+            else {
+                continue;
+            }
+            }
+            else{
             $record_params = ['id' => $activity['id']];
             $date_expected = $DB->get_record('course_modules', $record_params, $fields = '*');
             // echo $OUTPUT->heading("&nbsp"."&#8226". $activity['name'].": ".userdate($date_expected->completionexpected) ,5);
-            $table->data[] = [$activity['section'], $activity['name'], gmdate('d.m.y-H:i', $date_expected->completionexpected)];
+            $table->data[] = [$activity['section'], $activity['name'], date('d.m.y-H:i', $date_expected->completionexpected)];
+            }
+            
         }
     }
 

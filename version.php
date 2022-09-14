@@ -15,17 +15,17 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * Version details.
+/**
+ * Local plugin "DexpMod" - version.php
  *
- * @package   local_dexpmod
- * @copyright 2014 Daniel Neis Araujo
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package     local_dexpmod
+ * @copyright   2022 Alexander Dominicus, Bochum University of Applied Science <alexander.dominicus@hs-bochum.de>
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2022090901;      // The current module version (Date: YYYYMMDDXX).
+$plugin->version = 2022091400;      // The current module version (Date: YYYYMMDDXX).
 $plugin->requires = 2014050800;      // Requires this Moodle version.
 $plugin->component = 'local_dexpmod'; // Full name of the plugin (used for diagnostics).
 $plugin->cron = 0;

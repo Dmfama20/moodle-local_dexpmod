@@ -15,12 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/*
- * Library of functions for local_differentiator.
+/**
+ * Local plugin "DexpMod" - edit_form.php
  *
  * @package     local_dexpmod
+ * @copyright   2022 Alexander Dominicus, Bochum University of Applied Science <alexander.dominicus@hs-bochum.de>
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -34,6 +36,7 @@ class dexpmod_form extends moodleform
     {
         global $CFG;
         global $PAGE;
+        global $DB;
 
         $activities = local_dexpmod_get_activities($this->_customdata['courseid'], null, 'orderbycourse');
         $numactivies = count($activities);
@@ -60,25 +63,52 @@ class dexpmod_form extends moodleform
         ];
         $activitieslabel = 'Activities included';
         $mform->addElement('select', 'config_activitiesincluded', $activitieslabel, $activitiesincludedoptions);
-        $mform->setDefault('config_activitiesincluded', 'allactivites');
         $mform->setAdvanced('config_activitiesincluded', true);
         //Chose time intervall of shifted activities. Only possible if ALL activities are chose
-        $mform->addElement('advcheckbox', 'datedependence', 'Filter by date');
+        $mform->addElement('advcheckbox', 'datedependence', get_string('datefilter', 'local_dexpmod'));
         $mform->addHelpButton('datedependence', 'how_date_selection_works', 'local_dexpmod');
         $mform->hideif('datedependence', 'config_activitiesincluded', 'neq', 'selectedactivities');
         $mform->addElement('date_time_selector', 'date_min', get_string('date_min', 'local_dexpmod'));
         //  $mform->hideif('date_min', 'config_activitiesincluded', 'eq', 'selectedactivities');
         $mform->hideif('date_min', 'datedependence', 'eq', '0');
-        $mform->addElement('date_time_selector', 'date_max', 'maximal Datum');
+        $mform->addElement('date_time_selector', 'date_max', get_string('date_max', 'local_dexpmod'));
         // $mform->hideif('date_max', 'config_activitiesincluded', 'eq', 'selectedactivities');
         $mform->hideif('date_max', 'datedependence', 'eq', '0');
+        // $mform->addElement('button', 'datebutton', get_string('filterbydate', 'local_dexpmod'));
+
+        if ($this->_customdata['datemin']>0)   {
+            // date selection filter active
+            $mform->setDefault('config_activitiesincluded', 'selectedactivities');
+            $mform->setDefault('datedependence', 1);
+            $mform->setDefault('date_min', $this->_customdata['datemin']);
+            $mform->setDefault('date_max', $this->_customdata['datemax']);   
+        }
+        else    {
+            $mform->setDefault('config_activitiesincluded', 'allactivites');
+            $mform->setDefault('datedependence', 0);
+            $mform->hideif('selectactivities', 'datedependence', 'eq', '1');
+            
+        }
 
         // Selected activities by the user
         $activitiestoinclude = [];
         foreach ($activities as $index => $activity) {
             if ($activity['expected'] > 0) {
                 // $activitiestoinclude[$activity['type'].'-'.$activity['instance']] = $activity['name'];
-                $activitiestoinclude[$activity['id']] = $activity['section'].': '.$activity['name'].' '.gmdate('d.m.y', $activity['expected']);
+                // Filtered by date
+                if ($this->_customdata['datemin']>0) {
+                    if ($activity['expected']>=$this->_customdata['datemin'] && $activity['expected'] <= $this->_customdata['datemax']  )   {
+                        $record_params = ['id' => $activity['id']];
+                        $date_expected = $DB->get_record('course_modules', $record_params, $fields = '*');
+                        $activitiestoinclude[$activity['id']] = $activity['section'].': '.$activity['name'].' '.date('d.m.y-H:i', $date_expected->completionexpected);
+                    }
+                }
+                else {
+                    $record_params = ['id' => $activity['id']];
+                    $date_expected = $DB->get_record('course_modules', $record_params, $fields = '*');
+                    $activitiestoinclude[$activity['id']] = $activity['section'].': '.$activity['name'].' '.date('d.m.y-H:i', $date_expected->completionexpected);
+                }
+                
             }
         }
         $mform->addElement('select', 'selectactivities', 'select activities', $activitiestoinclude);
@@ -86,9 +116,17 @@ class dexpmod_form extends moodleform
         $mform->getElement('selectactivities')->setSize(count($activitiestoinclude));
         $mform->setAdvanced('selectactivities', true);
         $mform->hideif('selectactivities', 'config_activitiesincluded', 'neq', 'selectedactivities');
-        $mform->hideif('selectactivities', 'datedependence', 'eq', '1');
-        // $mform->addElement('submit', 'submitbutton', get_string('finish', 'local_dexpmod'));
-        $this->add_action_buttons($cancel = false, $submitlabel = 'Ändern!');
+
+        if ($this->_customdata['datemin']>0)    {
+            $mform->addElement('submit', 'movedates', get_string('finish', 'local_dexpmod'));
+        }
+        else    {
+            $mform->addElement('submit', 'applydatefilter', get_string('filterbydate', 'local_dexpmod'));
+            $mform->hideif('applydatefilter', 'datedependence', 'neq', '1');
+            $mform->addElement('submit', 'movedates', get_string('finish', 'local_dexpmod'));
+            $mform->hideif('movedates', 'datedependence', 'eq', '1');
+        }
+        // $this->add_action_buttons($cancel = false, $submitlabel = get_string('chageduedates', 'local_dexpmod'));
     }
 
     // //Custom validation should be added here
